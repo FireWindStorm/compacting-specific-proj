@@ -1,0 +1,64 @@
+<html>
+
+<body>
+
+  <p>Before the script...</p>
+
+  <a href="" id="a">click here to download your file</a>
+  <button onclick="download('file text', 'myfilename.txt', 'text/plain')">Create file</button>
+  
+  <script type="text/javascript" src="ExampleData.js"></script>
+  <script type="text/javascript" src="Packer.js"></script>
+  <script type="text/javascript">
+	var packer = new Packer();
+	
+	var doThis = 2;
+	
+	if ( doThis == 1 )
+	{
+		// Single key value packing / unpacking
+		var packedString = packer.pack(exampleKey, exampleValue);
+		var unpackedObject = packer.unpack(packedString);
+		
+		console.log("Input		Key:", exampleKey, "Value:", exampleValue);
+		console.log("Packed	string:", packedString);
+		console.log("Unpacked	Key:", unpackedObject.key, "Value:", unpackedObject.value);
+		
+		console.assert(exampleKey == unpackedObject.key, "Input and output key are not equal!!!");
+		console.assert(exampleValue == unpackedObject.value, "Input and output values are not equal, probably trim");
+	}
+	else if ( doThis == 2 )
+	{
+		// URI parameter set packing and unpacking
+		var usedData = exampleData;
+		var t0 = performance.now();
+		var compactedData = packer.pack_all(usedData);
+		var t1 = performance.now();
+		var decompactedData = packer.unpack_all(compactedData);
+		var t2 = performance.now();
+		
+		console.log("Packed	time:", t1-t0," Unpacked time:", t2-t1);
+		console.log("Packed	data	:", compactedData);
+		console.log("Input			:", usedData);
+		console.log("Unpacked data	:", decompactedData);
+		
+		console.assert(exampleData == decompactedData, "Input and output are not equal, probably trim");
+	}
+	
+	// Test for file
+	var testData = "Hello world";
+	download(testData, "out", 'text/plain');
+	
+	function download(text, name, type) {
+		var a = document.getElementById("a");
+		var file = new Blob([text], {type: type});
+		a.href = URL.createObjectURL(file);
+		a.download = name;
+	}
+  </script>
+  
+  <p>...After the script.</p>
+
+</body>
+
+</html>
